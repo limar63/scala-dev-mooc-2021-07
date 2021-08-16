@@ -141,7 +141,7 @@ object opt {
 
   sealed trait Option[+T] {
     def isEmpty: Boolean = this match {
-      case Option.Some(v) => false
+      case Option.Some(_) => false
       case Option.None => true
     }
 
@@ -165,16 +165,16 @@ object opt {
       case Option.None => Option.None
     }
 
-    def mapByFlatMap[B](f: T => B): Option[B] = flatMap[B](A => this.flatMap(A => Option.Some(f(A))))
+    def mapByFlatMap[B](f: T => B): Option[B] = flatMap[B](_ => this.flatMap(A => Option.Some(f(A))))
 
     def printIfAny: Unit = this match {
       case Option.Some(v) => println(v)
       case Option.None => println("Option is empty")
     }
 
-    def zip[B](givenOption: Option[B]): Option[(T, B)] = this match {
-      case Option.Some(v) => if (givenOption.isEmpty) Option.None else Option.Some((v, givenOption.get))
-      case Option.None => Option.None
+    def zip[B](givenOption: Option[B]): Option[(T, B)] = (this, givenOption) match {
+      case (Option.Some(a), Option.Some(b))  => Option.Some((a, b))
+      case _ => Option.None
     }
 
     def filter(predicate: T => Boolean): Option[T] = this match {
@@ -197,9 +197,7 @@ object List {
     def ::[A >: T](givenElement: A): MyList[A] = MyList.Cons[A](givenElement, this)
 
     def mkString(separator: String = ","): String = this match {
-      //кейс с ифом сделан чтобы избавиться от лишнего сепаратора в конце,
-      //а кейс с нилом остался на месте чтобы работал метод с пустым списком
-      case MyList.Cons(head, tail) if tail == MyList.Nil => s"$head"
+      case MyList.Cons(head, MyList.Nil) => s"$head"
       case MyList.Cons(head, tail) => s"$head$separator" ++ tail.mkString(separator)
       case MyList.Nil => ""
     }
@@ -221,11 +219,30 @@ object List {
       case MyList.Nil => MyList.Nil
     }
 
-    def filter(f: T => Boolean): MyList[T] = this match {
-      case MyList.Cons(head, tail) => if (f(head)) head :: tail.filter(f) else tail.filter(f)
-      case MyList.Nil => MyList.Nil
+    def tailMap[B](f: T => B): MyList[B] = {
+      @tailrec
+      def tailMapImplementation(f: T => B)(accum: MyList[B] = MyList.Nil, currentTail: MyList[T]): MyList[B] = currentTail match {
+        case MyList.Cons(head, currentTail) => tailMapImplementation(f: T => B)(f(head) :: accum, currentTail)
+        case MyList.Nil => accum.reverse
+      }
+      tailMapImplementation(f)(currentTail = this)
     }
 
+    def filter(f: T => Boolean): MyList[T] = this match {
+      case MyList.Cons(head, tail) if f(head) =>  head :: tail.filter(f)
+      case MyList.Cons(_, tail) =>  tail.filter(f)
+      case MyList.Nil => MyList.Nil
+    }
+    override def toString: String = {
+      @tailrec
+      def toStringWithoutParenthesis(accum: String = "", parsed: MyList[T]): String = parsed match {
+        case MyList.Cons(head, MyList.Nil) => accum.reverse + head.toString
+        case MyList.Cons(head, tail) => toStringWithoutParenthesis(" ," + head.toString + accum, tail)
+        case MyList.Nil => ""
+      }
+      "(" + toStringWithoutParenthesis(parsed = this) + ")"
+
+    }
   }
 
   object MyList {
@@ -238,6 +255,8 @@ object List {
     def incList(listOfInts: MyList[Int]): MyList[Int] = listOfInts.map(_ + 1)
 
     def shoutString(listOfStrings: MyList[String]): MyList[String] = listOfStrings.map(_ ++ "!")
+
   }
 
 }
+

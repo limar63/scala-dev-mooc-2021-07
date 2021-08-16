@@ -9,8 +9,8 @@ object variables {
 
    //1. Объявите две константы, одна будет слово "Month", а друга "Year"
 
-   val Month = "Month"
-   val Year = "Year"
+  val Month = "Month"
+  val Year = "Year"
 
 
 
