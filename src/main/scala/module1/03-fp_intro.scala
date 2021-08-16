@@ -173,7 +173,7 @@ object opt {
     }
 
     def zip[B](givenOption: Option[B]): Option[(T, B)] = (this, givenOption) match {
-      case (Option.Some(a), Option.Some(b))  => Option.Some((a, b))
+      case (Option.Some(a), Option.Some(b)) => Option.Some((a, b))
       case _ => Option.None
     }
 
@@ -225,14 +225,16 @@ object List {
         case MyList.Cons(head, currentTail) => tailMapImplementation(f: T => B)(f(head) :: accum, currentTail)
         case MyList.Nil => accum.reverse
       }
+
       tailMapImplementation(f)(currentTail = this)
     }
 
     def filter(f: T => Boolean): MyList[T] = this match {
-      case MyList.Cons(head, tail) if f(head) =>  head :: tail.filter(f)
-      case MyList.Cons(_, tail) =>  tail.filter(f)
+      case MyList.Cons(head, tail) if f(head) => head :: tail.filter(f)
+      case MyList.Cons(_, tail) => tail.filter(f)
       case MyList.Nil => MyList.Nil
     }
+
     override def toString: String = {
       @tailrec
       def toStringWithoutParenthesis(accum: String = "", parsed: MyList[T]): String = parsed match {
@@ -240,6 +242,7 @@ object List {
         case MyList.Cons(head, tail) => toStringWithoutParenthesis(" ," + head.toString + accum, tail)
         case MyList.Nil => ""
       }
+
       "(" + toStringWithoutParenthesis(parsed = this) + ")"
 
     }

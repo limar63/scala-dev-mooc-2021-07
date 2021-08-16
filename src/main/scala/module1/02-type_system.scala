@@ -14,19 +14,18 @@ object type_system {
    *
    */
 
-   // AnyVal
+  // AnyVal
 
-   //
-
-
-   // Unit
+  //
 
 
+  // Unit
 
-   // Null
+
+  // Null
 
 
-   // Nothing
+  // Nothing
 
   def absurd(v: Nothing) = ???
 
@@ -35,7 +34,7 @@ object type_system {
 
   // работа с ресурсом
 
- lazy  val file : File = ???
+  lazy val file: File = ???
 
 
   def ensureClose[S <: Closeable, R](r: S)(f: S => R): R = {
@@ -46,8 +45,7 @@ object type_system {
     }
   }
 
- lazy val result = ensureClose(io.Source.fromFile(file))(s => s.getLines())
-
+  lazy val result = ensureClose(io.Source.fromFile(file))(s => s.getLines())
 
 
   /**
@@ -58,34 +56,32 @@ object type_system {
    */
 
 
-   class Foo{
+  class Foo {
 
-    private var _a: String = _ 
-     def a: String = _a
-     def a_=(s: String) = _a = s
+    private var _a: String = _
 
-   }
+    def a: String = _a
 
-   val foo: Foo = new Foo()
+    def a_=(s: String) = _a = s
 
-   foo.a = "foo"
-   
+  }
 
+  val foo: Foo = new Foo()
+
+  foo.a = "foo"
 
 
   /**
    * Задание 1: Создать класс "Прямоугольник"(Rectangle), мы должны иметь возможность создавать прямоугольник с заданной
    * длиной(length) и шириной(width), а также вычислять его периметр и площадь
-   * 
+   *
    */
-   
-   class Rectangle private(val x: Int, val y: Int) {
+
+  class Rectangle private(val x: Int, val y: Int) {
     def area(): Int = x * y
+
     def perimeter(): Int = 2 * (x + y)
   }
-
-
-
 
 
   /**
@@ -96,19 +92,19 @@ object type_system {
    * 3. Могут быть компаньоны
    */
 
-   object Rectangle{
-      def apply(x: Int, y: Int): Rectangle = new Rectangle(x, y)
-      def apply(x: Int): Rectangle = new Rectangle(x, x)
-   }
+  object Rectangle {
+    def apply(x: Int, y: Int): Rectangle = new Rectangle(x, y)
+
+    def apply(x: Int): Rectangle = new Rectangle(x, x)
+  }
 
 
-   val rec4 = Rectangle(2, 4)
+  val rec4 = Rectangle(2, 4)
 
 
-   def foo(s: => String) = ???
+  def foo(s: => String) = ???
 
-   def bar: String = ???
-
+  def bar: String = ???
 
 
   /**
@@ -116,21 +112,17 @@ object type_system {
    *
    */
 
-   case class Rectangle2(width: Int, length: Int)
+  case class Rectangle2(width: Int, length: Int)
 
-   val rec2 = Rectangle2(4, 2)
-   val rec3 = Rectangle2(4, 2)
+  val rec2 = Rectangle2(4, 2)
+  val rec3 = Rectangle2(4, 2)
 
-   val square = rec3.copy(length = 4)
+  val square = rec3.copy(length = 4)
 
-   rec2 == rec3 // true
-
-
-   // создать case класс кредитная карта с двумя полями номер и cvc
+  rec2 == rec3 // true
 
 
-
-
+  // создать case класс кредитная карта с двумя полями номер и cvc
 
 
   /**
@@ -140,23 +132,22 @@ object type_system {
    */
 
 
-
   /**
    * trait
    *
    */
 
-   trait Service{
-     def getUser: String
-     val getUser2: String
-   }
+  trait Service {
+    def getUser: String
+
+    val getUser2: String
+  }
 
 
-   class ServiceImpl extends Service{
-     val getUser: String = ???
-     lazy val getUser2: String = ???
-   }
-
+  class ServiceImpl extends Service {
+    val getUser: String = ???
+    lazy val getUser2: String = ???
+  }
 
 
   class A {
@@ -190,10 +181,6 @@ object type_system {
   // DECBA
 
   // A -> B -> C -> E -> D
-
-
-
-
 
 
   /**
