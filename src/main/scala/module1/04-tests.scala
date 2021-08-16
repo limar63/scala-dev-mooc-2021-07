@@ -86,6 +86,7 @@ object ListTesting {
       MyList("a!", "b!", "c!", "d!", "e!", "f!"))
     assert(MyList.shoutString(MyList[String]()) == MyList())
     assert(MyList(0, 1, 2, 3, 4, 5).toString == "(0, 1, 2, 3, 4, 5)")
+    //test of toString
     assert(MyList().toString == "()")
     println("Testing of the data type \"List\" is completed successfully")
   }
