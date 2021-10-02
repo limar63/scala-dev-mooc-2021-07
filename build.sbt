@@ -10,3 +10,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.13.3",
     libraryDependencies ++= zio
   )
+
+testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
+
+scalacOptions += "-Ymacro-annotations"
