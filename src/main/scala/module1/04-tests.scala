@@ -70,10 +70,6 @@ object ListTesting {
     assert(MyList(0, 1, 2, 3, 4, 5).map(_ + 2) == MyList(2, 3, 4, 5, 6, 7))
     assert(MyList[Int]().map(_ + 2) == MyList())
     assert(MyList(0, 1, 2, 3, 4, 5).map(a => a.toString) == MyList("0", "1", "2", "3", "4", "5"))
-    //test of tailMap
-    assert(MyList(0, 1, 2, 3, 4, 5).tailMap(_ + 2) == MyList(2, 3, 4, 5, 6, 7))
-    assert(MyList[Int]().tailMap(_ + 2) == MyList())
-    assert(MyList(0, 1, 2, 3, 4, 5).tailMap(a => a.toString) == MyList("0", "1", "2", "3", "4", "5"))
     //test of filter
     assert(MyList(0, 1, 2, 3, 4, 5).filter(_ > 3) == MyList(4, 5))
     assert(MyList(0, 1, 2, 3, 4, 5).filter(_ > 5) == MyList())
@@ -85,9 +81,7 @@ object ListTesting {
     assert(MyList.shoutString(MyList("a", "b", "c", "d", "e", "f")) ==
       MyList("a!", "b!", "c!", "d!", "e!", "f!"))
     assert(MyList.shoutString(MyList[String]()) == MyList())
-    assert(MyList(0, 1, 2, 3, 4, 5).toString == "(0, 1, 2, 3, 4, 5)")
-    //test of toString
-    assert(MyList().toString == "()")
+
     println("Testing of the data type \"List\" is completed successfully")
   }
 }
