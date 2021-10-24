@@ -40,11 +40,11 @@ object functional_effects {
        * 1. Объявить исполняемую модель Console
        */
       case class Console[A](unsafeRun: () => A){ self =>
-            def map[B](f: A => B): Console[B] = 
+            def map[B](f: A => B): Console[B] =
                 flatMap(a => Console.console(f(a)))
 
-            def flatMap[B](f: A => Console[B]): Console[B] = 
-                Console.console(f(self.unsafeRun()).unsafeRun())
+            def flatMap[B](f: A => Console[B]): Console[B] =
+                Console.console(f(this.unsafeRun()).unsafeRun())
       }
 
 
@@ -92,10 +92,7 @@ object functional_effects {
       case class Return[A](v: () => A) extends Console[A]
 
 
-    //   val p1 = Println(
-    //       "Привет, как тебя зовут?",
-    //       ReadLine()
-    //   )
+
 
       /**
        * 2. Написать конструкторы

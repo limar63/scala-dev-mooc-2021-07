@@ -22,7 +22,7 @@ object App {
 
   
 
-    zio.Runtime.default.unsafeRun(zioConcurrency.printEffectRunningTime(zioConcurrency.greeter2))
+    zio.Runtime.default.unsafeRun(zioOperators.greetAndEcho)
   }
 }
 
