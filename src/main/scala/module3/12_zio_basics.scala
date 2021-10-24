@@ -17,16 +17,10 @@ import zio.UIO
 import zio.ZIO
 
 
-
 /** **
  * ZIO[-R, +E, +A] ----> R => Either[E, A]
  *
  */
-
- 
-
-
-
 
 
 object toyModel {
@@ -38,46 +32,43 @@ object toyModel {
    * Используя executable encoding реализуем свой zio
    */
 
-   case class ZIO[-R, +E, +A](run: R => Either[E, A]){ self =>
-        def map[B](f: A => B): ZIO[R, E, B] = 
-          ZIO(r => self.run(r).map(f))
+  case class ZIO[-R, +E, +A](run: R => Either[E, A]) {
+    self =>
+    def map[B](f: A => B): ZIO[R, E, B] =
+      ZIO(r => self.run(r).map(f))
 
-        def flatMap[R1 <: R, E1 >: E, B](f: A => ZIO[R1, E1, B]): ZIO[R1, E1, B] = 
-          ZIO(r => self.run(r).fold(ZIO.fail, f).run(r))
-   }
-
+    def flatMap[R1 <: R, E1 >: E, B](f: A => ZIO[R1, E1, B]): ZIO[R1, E1, B] =
+      ZIO(r => self.run(r).fold(ZIO.fail, f).run(r))
+  }
 
 
   /**
    * Реализуем конструкторы под названием effect и fail
    */
 
-   object ZIO{
-     def effect[A](a: => A): ZIO[Any, Throwable, A] = {
-       try{
-         ZIO(_ => Right(a))
-       } catch {
-         case e => ZIO(_ => Left(e))
-       }
-     }
+  object ZIO {
+    def effect[A](a: => A): ZIO[Any, Throwable, A] = {
+      try {
+        ZIO(_ => Right(a))
+      } catch {
+        case e => ZIO(_ => Left(e))
+      }
+    }
 
-     def fail[E](e: E): ZIO[Any, E, Nothing] = ZIO(_ => Left(e)) 
-   }
-
+    def fail[E](e: E): ZIO[Any, E, Nothing] = ZIO(_ => Left(e))
+  }
 
 
   /** *
    * Напишите консольное echo приложение с помощью нашего игрушечного ZIO
    */
 
-   lazy val echo: ZIO[Any, Throwable, Unit] =  for{
-     str <- ZIO.effect(StdIn.readLine())
-     _ <- ZIO.effect(println(str))
-   } yield ()
+  lazy val echo: ZIO[Any, Throwable, Unit] = for {
+    str <- ZIO.effect(StdIn.readLine())
+    _ <- ZIO.effect(println(str))
+  } yield ()
 
-   echo.run()
-
-
+  echo.run()
 
 
   type Error
@@ -110,8 +101,6 @@ object zioConstructors {
   val z3: UIO[Unit] = ZIO.effectTotal(println("Hello"))
 
 
-
-
   // From Future
   val f: Future[Int] = ???
   val z4: Task[Int] = ZIO.fromFuture(ec => f)
@@ -122,20 +111,17 @@ object zioConstructors {
   val z5: Task[String] = ZIO.fromTry(t)
 
 
-
   // From either
   val e: Either[String, Int] = ???
-  val z6: IO[String,Int] = ZIO.fromEither(e)
-
+  val z6: IO[String, Int] = ZIO.fromEither(e)
 
 
   // From option
-  val opt : Option[Int] = ???
+  val opt: Option[Int] = ???
   val z7: IO[Option[Nothing], Int] = ZIO.fromOption(opt)
 
 
   val f2: Future[Option[Int]] = ???
-
 
 
   // From function
@@ -155,7 +141,6 @@ object zioConstructors {
   val _: ZIO[Any, Int, Nothing] = ZIO.fail(7)
 
 }
-
 
 
 object zioOperators {
@@ -184,35 +169,38 @@ object zioOperators {
    *
    */
 
-  lazy val echo = ???
+  lazy val echo: ZIO[Any, Throwable, Unit] = readLine.flatMap(str => ZIO.effect(println(str)))
 
   /**
    * Создать ZIO эффект, который будет привествовать пользователя и говорить, что он работает как echo
    */
 
-  lazy val greetAndEcho: ZIO[Any, Throwable, (Unit, Unit)] = ???
+  lazy val greetAndEcho: ZIO[Any, Throwable, Unit] = for {
+    _ <- writeLine("Добрый день, я работаю как echo")
+    _ <- echo
+  } yield ()
 
   /**
    * ZIP
    */
 
-  lazy val a1: Task[Unit] = ???
-  lazy val b1: Task[String] = ???
+  //lazy val a1: Task[Unit] = ???
+  //lazy val b1: Task[String] = ???
 
 
-  val z9: ZIO[Any,Throwable, (Unit, String)] = a1.zip(b1)
+  //val z9: ZIO[Any, Throwable, (Unit, String)] = a1.zip(b1)
 
   // zipRight
-  lazy val z10: ZIO[Any,Throwable, String] = a1 *> b1
+  //lazy val z10: ZIO[Any, Throwable, String] = a1 *> b1
 
   // zipLeft
-  lazy val z11: ZIO[Any,Throwable,Unit] = a1 zipLeft b1
+  //lazy val z11: ZIO[Any, Throwable, Unit] = a1 zipLeft b1
 
 
   // greet and echo улучшенный
-  lazy val _: ZIO[Any, Throwable, Unit] = ???
+  //lazy val _: ZIO[Any, Throwable, Unit] = ???
 
-  lazy val _: ZIO[Any, Throwable, Unit] = ???
+  //lazy val _: ZIO[Any, Throwable, Unit] = ???
 
 
   /**
@@ -220,14 +208,14 @@ object zioOperators {
    * строки из консоли, преобразовывать их в числа, а затем складывать их
    */
 
-  val r1: ZIO[Any, Throwable, Int] = for{
+  val r1: ZIO[Any, Throwable, Int] = for {
     i1 <- lineToInt
     i2 <- lineToInt
   } yield i1 + i2
 
-  for{
+  for {
     _ <- ZIO.effect(println("Введите 2 числа"))
-    res  <- r1
+    res <- r1
   } yield res
 
   ZIO.effect(println("Введите 2 числа")) *> r1
@@ -236,13 +224,13 @@ object zioOperators {
    * Второй вариант
    */
 
-  val r2: ZIO[Any, Throwable, Int] = ???
+  //val r2: ZIO[Any, Throwable, Int] = ???
 
   /**
    * Доработать написанную программу, чтобы она еще печатала результат вычисления в консоль
    */
 
-  lazy val r3 = ???
+  //lazy val r3 = ???
 
 
   lazy val a: Task[Int] = ???
@@ -271,11 +259,11 @@ object zioOperators {
   lazy val ab4 = b.zipWith(b)(_ + _)
 
   /**
-    * 
-    * A as B
-    */
+   *
+   * A as B
+   */
 
-  lazy val c  = ???
+  lazy val c = ???
 
 
   def readFile(fileName: String): ZIO[Any, IOException, String] = ???
@@ -294,12 +282,11 @@ object zioRecursion {
    */
 
 
-
   lazy val readInt: ZIO[Any, Throwable, Int] = zioOperators.lineToInt
 
 
   lazy val readIntOrRetry: ZIO[Any, Throwable, Int] = readInt.orElse(
-      ZIO.effect(println("Некорректный ввод, попробуйте еще раз")) *> readIntOrRetry
+    ZIO.effect(println("Некорректный ввод, попробуйте еще раз")) *> readIntOrRetry
   )
 
 
@@ -307,7 +294,7 @@ object zioRecursion {
    * Считаем факториал
    */
   def factorial(n: Int): Int = {
-    if(n <= 1) n
+    if (n <= 1) n
     else n * factorial(n - 1)
   }
 
@@ -316,7 +303,7 @@ object zioRecursion {
    *
    */
   def factorialZ(n: Int): Task[Int] = {
-    if( n <= 1) ZIO.succeed(n)
+    if (n <= 1) ZIO.succeed(n)
     else ZIO.succeed(n).zipWith(factorialZ(n - 1))(_ * _)
   }
 

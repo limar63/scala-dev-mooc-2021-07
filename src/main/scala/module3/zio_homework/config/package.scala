@@ -10,4 +10,7 @@ package object config {
 
   val load: Task[AppConfig] =
     Task.effect(ConfigSource.file(Paths.get("src/main/resources/application.conf")).loadOrThrow[AppConfig])
+  /*val loadDefault: Task[AppConfig] = {
+    Task.effect(AppConfig("DefaultName", "default.url"))
+  }*/
 }
