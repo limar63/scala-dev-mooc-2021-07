@@ -1,6 +1,5 @@
 package module3
 
-import module3.zioConcurrency.printEffectRunningTime
 import zio.{Has, Task, ULayer, ZIO, ZLayer}
 import zio.clock.{Clock, sleep}
 import zio.console._
